@@ -7,10 +7,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #5b8ff9;
-            --bg-color: #f5f6fa;
-            --card-bg: #ffffff;
+            --primary: #5b8ff9; /* 麋鹿蓝 */
+            --bg-color: #f0f2f5; /* 网页背景灰 */
+            --card-bg: #ffffff;  /* 卡片白 */
             --text-main: #333;
+            --text-sub: #888;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -19,121 +20,139 @@
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
-            /* 核心修改：强制全屏，禁止body滚动，确保卡片悬浮 */
             height: 100vh;
             width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden; 
+            overflow: hidden; /* 禁止背景滚动 */
         }
 
-        /* 核心修改：卡片容器自适应 */
+        /* 卡片容器：悬浮设计 */
         .container {
             background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
             
-            /* 尺寸控制 */
-            width: 90%; /* 宽度占屏幕90% (两边留空) */
-            max-width: 420px; /* 电脑端不至于太宽 */
-            height: 90vh; /* 高度占屏幕90% (上下留空) */
-            max-height: 800px; /* 限制最大高度 */
+            /* 尺寸自适应：占屏幕90% */
+            width: 90%; 
+            max-width: 420px; 
+            height: 90vh; 
+            max-height: 800px; 
             
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: hidden; /* 裁剪圆角 */
+            overflow: hidden; 
         }
 
-        /* 页面通用布局：支持内部滚动 */
+        /* 内部滚动区域 */
         .page-content {
             flex: 1;
-            padding: 30px 20px;
-            overflow-y: auto; /* 内容过多时，卡片内部滚动 */
+            padding: 30px 24px;
+            overflow-y: auto; /* 允许卡片内部滚动 */
             display: flex;
             flex-direction: column;
-            /* 隐藏滚动条样式但保留功能 */
+            /* 隐藏滚动条 */
             scrollbar-width: none; 
             -ms-overflow-style: none;
         }
         .page-content::-webkit-scrollbar { display: none; }
 
-        /* 首页 */
+        /* 1. 首页样式 */
         .intro-box { text-align: center; justify-content: center; }
-        .intro-logo { font-size: 60px; margin-bottom: 20px; }
-        h1 { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 15px; }
-        .intro-desc { font-size: 14px; color: #666; line-height: 1.8; margin-bottom: 40px; }
+        .intro-logo { font-size: 64px; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+        h1 { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 16px; }
+        .intro-desc { font-size: 15px; color: #666; line-height: 1.8; margin-bottom: 40px; }
 
-        /* 按钮固定在底部或者随流 */
-        .btn-area { margin-top: auto; width: 100%; }
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 0;
-            width: 100%;
-            font-size: 16px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(91, 143, 249, 0.3);
-            transition: opacity 0.2s;
-        }
-        .btn:active { opacity: 0.8; }
-
-        /* 答题页 */
+        /* 2. 答题页样式 */
         .progress-bar-bg {
-            width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; margin-bottom: 25px; flex-shrink: 0;
+            width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; margin-bottom: 30px; flex-shrink: 0;
         }
         .progress-bar-fill {
-            height: 100%; background: var(--primary); width: 0%; transition: width 0.3s;
+            height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; border-radius: 3px;
         }
 
         .question-text {
-            font-size: 18px; font-weight: bold; margin-bottom: 25px; line-height: 1.5; color: #222;
+            font-size: 19px; font-weight: bold; margin-bottom: 30px; line-height: 1.5; color: #222; min-height: 60px;
         }
 
-        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .options-list { display: flex; flex-direction: column; gap: 14px; }
         .option-item {
             background: #f7f8fa;
             color: #333;
-            padding: 15px 15px;
-            border-radius: 10px;
+            padding: 16px 20px;
+            border-radius: 12px;
             font-size: 15px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: left;
+            border: 1px solid transparent;
         }
-        .option-item:active { background: #eef4ff; color: var(--primary); }
+        .option-item:active { 
+            background: #eef4ff; 
+            color: var(--primary); 
+            border-color: var(--primary);
+            transform: scale(0.99);
+        }
 
-        /* 结果页 */
-        .result-area { align-items: center; }
-        .result-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; flex-shrink: 0; }
+        /* 3. 结果页样式 */
+        .result-area { align-items: center; padding-top: 20px; }
+        .result-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #333; }
         
+        /* 核心标签 */
         .core-tag {
             background: #e6f7ff; color: var(--primary);
-            padding: 5px 15px; border-radius: 6px; font-size: 14px; font-weight: bold;
-            margin-bottom: 10px; flex-shrink: 0;
+            padding: 8px 20px; border-radius: 8px; font-size: 16px; font-weight: bold;
+            margin-bottom: 12px;
+        }
+        
+        /* 副标签区域 */
+        .sub-tags-box {
+            display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+            margin-bottom: 10px; min-height: 24px;
+        }
+        .sub-tag {
+            font-size: 12px; color: #666; background: #f5f5f5; 
+            padding: 4px 10px; border-radius: 4px;
         }
 
         .chart-wrapper {
             position: relative;
             width: 100%;
-            height: 320px; /* 稍微调小一点，确保小屏手机能放下 */
-            flex-shrink: 0; /* 防止被压缩 */
-            margin: 5px 0;
+            height: 340px; 
+            flex-shrink: 0; 
+            margin: 10px 0;
         }
 
         .save-tip { font-size: 12px; color: #999; margin-bottom: 15px; flex-shrink: 0; }
         
         .result-desc {
             font-size: 14px; color: #555; text-align: justify;
-            background: #f9f9f9; padding: 15px; border-radius: 8px;
-            margin-bottom: 20px; line-height: 1.6;
+            background: #f9f9f9; padding: 16px; border-radius: 12px;
+            margin-bottom: 20px; line-height: 1.6; width: 100%;
         }
 
+        /* 底部按钮区域 */
+        .btn-area { margin-top: auto; width: 100%; padding-top: 10px; }
+        .btn {
+            background: linear-gradient(135deg, #5b8ff9, #4a7dff);
+            color: white;
+            border: none;
+            padding: 15px 0;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(91, 143, 249, 0.3);
+            transition: opacity 0.2s;
+        }
+        .btn:active { opacity: 0.9; transform: scale(0.98); }
+
         .hidden { display: none !important; }
+        
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
     </style>
 </head>
 <body>
@@ -145,9 +164,9 @@
             <div class="intro-logo">🦌</div>
             <h1>性偏好全维测试</h1>
             <p class="intro-desc">
-                本测试基于22个心理维度<br>
-                深入解析你在亲密关系中的深层欲望<br>
-                生成专属雷达图
+                基于22个心理维度<br>
+                深度解析你的潜在欲望<br>
+                生成专属六边形战士雷达图
             </p>
         </div>
         <div class="btn-area">
@@ -166,7 +185,10 @@
 
     <div id="page-result" class="page-content hidden result-area">
         <div class="result-title">测试结果</div>
+        
         <div class="core-tag" id="core-attr">分析中...</div>
+        
+        <div class="sub-tags-box" id="sub-tags"></div>
         
         <div class="chart-wrapper">
             <canvas id="radarChart"></canvas>
@@ -186,7 +208,8 @@
 </div>
 
 <script>
-    // --- 维度与题目配置 (22题) ---
+    // --- 1. 配置数据 ---
+    // 22个维度 (顺序对应雷达图顺时针)
     const dimKeys = [
         'sadism', 'humiliation_s', 'conquest', 'control', 'force_s', 
         'protect', 
@@ -194,6 +217,7 @@
         'rebel', 'indulge', 'exhibit', 'group', 'trans', 'gay', 'fetish', 'ntr', 'pure', 'guide', 'mood'
     ];
     
+    // 维度中文展示名
     const dimLabels = [
         '虐待', '羞辱', '征服', '控制', '强迫',
         '保护',
@@ -202,8 +226,8 @@
     ];
 
     let scores = {};
-    dimKeys.forEach(k => scores[k] = 0);
-
+    
+    // 22道题目
     const questions = [
         { t: "1. 看到伴侣因疼痛而扭曲的表情，我会感到兴奋。", k: 'sadism' },
         { t: "2. 我喜欢用言语贬低对方，看对方羞耻的样子。", k: 'humiliation_s' },
@@ -229,6 +253,7 @@
         { t: "22. 环境、灯光和气味比单纯的活塞运动更重要。", k: 'mood' }
     ];
 
+    // 选项 (五级量表)
     const optionsData = [
         { text: "非常不符合", score: 0 },
         { text: "比较不符合", score: 1 },
@@ -239,8 +264,12 @@
 
     let currentIdx = 0;
 
-    // --- 逻辑控制 ---
+    // --- 2. 控制逻辑 ---
     function startQuiz() {
+        // 重置
+        dimKeys.forEach(k => scores[k] = 0);
+        currentIdx = 0;
+        
         document.getElementById('page-intro').classList.add('hidden');
         document.getElementById('page-quiz').classList.remove('hidden');
         renderQuestion();
@@ -255,13 +284,16 @@
 
         const list = document.getElementById('opt-list');
         list.innerHTML = '';
+        
         optionsData.forEach(opt => {
             const div = document.createElement('div');
             div.className = 'option-item';
             div.innerText = opt.text;
-            div.onclick = () => {
+            // 解决移动端点击延迟
+            div.onclick = function() {
                 scores[q.k] = opt.score;
-                nextQuestion();
+                // 短暂延迟让用户看到点击效果
+                setTimeout(nextQuestion, 150);
             };
             list.appendChild(div);
         });
@@ -272,57 +304,103 @@
         if (currentIdx < questions.length) {
             renderQuestion();
         } else {
-            showResult();
+            calculateAndShowResult();
         }
     }
 
-    function showResult() {
+    // --- 3. 核心：新的结果计算逻辑 ---
+    function calculateAndShowResult() {
         document.getElementById('page-quiz').classList.add('hidden');
         document.getElementById('page-result').classList.remove('hidden');
 
-        // 找最大值
-        let maxK = dimKeys[0];
-        dimKeys.forEach(k => { if (scores[k] > scores[maxK]) maxK = k; });
+        // A. 将分数整理为数组并排序: [{key:'sadism', score:4}, ...]
+        let sortedScores = dimKeys.map(k => ({ key: k, score: scores[k] }));
+        sortedScores.sort((a, b) => b.score - a.score); // 降序
 
-        // 结果解释
-        const resultMap = {
-            'sadism': { t: '施虐者 (S)', d: '你享受掌控与征服，看着伴侣在你的引导下展露脆弱，能带给你无与伦比的满足感。' },
-            'humiliation_s': { t: '言语支配者', d: '语言是你的武器，你善于通过言语的力量摧毁防线，重建秩序。' },
-            'conquest': { t: '征服者', d: '你渴望的不是顺从，而是经过抵抗后的臣服，这种征服的过程让你着迷。' },
-            'control': { t: '掌控者', d: '细节决定成败，你需要在关系中拥有绝对的知情权和决定权。' },
-            'force_s': { t: '强力支配', d: '你倾向于展现绝对的力量，这种不可抗拒的压迫感是你欲望的源泉。' },
-            'protect': { t: '守护者', d: '你的支配带有温情，你喜欢把伴侣当作孩子一样宠爱、管教和保护。' },
-            'masochism': { t: '受虐者 (M)', d: '疼痛对你而言不仅仅是痛觉，更是通往极乐世界的钥匙，让你感受到真实的存在。' },
-            'humiliation_m': { t: '受辱倾向', d: '被剥夺尊严的瞬间，反而让你卸下了平日的伪装，获得了灵魂的解脱。' },
-            'submission': { t: '臣服者', d: '你渴望将身心完全托付给一位强大的主导者，在臣服中获得最大的安全感。' },
-            'obedience': { t: '服从者', d: '执行命令是你表达爱意的方式，严格的规则反而让你感到内心平静。' },
-            'force_m': { t: '强迫幻想', d: '你潜意识里渴望不可抗力带来的冲击，这能让你合理化内心深处的欲望。' },
-            'rebel': { t: '叛逆者', d: '常规让你厌倦，越是被禁止的领域，越能点燃你的激情。' },
-            'indulge': { t: '纵欲者', d: '你追求纯粹的感官享乐，在性爱中希望抛弃社会身份，回归本能。' },
-            'exhibit': { t: '露出倾向', d: '被观看的风险让你心跳加速，世界的目光是你最好的催情剂。' },
-            'group': { t: '群体玩家', d: '一对一的关系无法满足你的探索欲，你喜欢更复杂、更热闹的互动。' },
-            'trans': { t: '跨性别幻想', d: '你对性别的边界感到好奇，喜欢尝试打破传统性别角色的扮演。' },
-            'gay': { t: '双向潜质', d: '你的性取向具有流动性，对于同性之间的美感和张力有着敏锐的感知。' },
-            'fetish': { t: '恋物鉴赏家', d: '特定的物品（如丝袜、皮革）不仅是道具，更是你欲望的开关。' },
-            'ntr': { t: 'NTR爱好者', d: '看着伴侣被他人占有，那种嫉妒与兴奋交织的复杂情绪让你欲罢不能。' },
-            'pure': { t: '纯爱战神', d: '在你眼中，身体的结合必须是灵魂共鸣的延伸，爱是性的唯一理由。' },
-            'guide': { t: '引导者', d: '你喜欢像导师一样，循循善诱地开发伴侣，享受对方一点点成长的过程。' },
-            'mood': { t: '浪漫主义', d: '你注重氛围感，灯光、气味、音乐的配合能让你的体验提升到新的高度。' }
-        };
-        const res = resultMap[maxK] || { t: '多元探索者', d: '你的性偏好非常丰富且均衡，不被单一的标签所定义。' };
-        
-        document.getElementById('core-attr').innerText = "核心属性：" + res.t;
-        document.getElementById('result-text').innerText = res.d;
+        let maxScore = sortedScores[0].score;
+        let totalScore = sortedScores.reduce((sum, item) => sum + item.score, 0);
 
+        let finalTitle = "";
+        let finalDesc = "";
+        let subTagsHTML = ""; 
+
+        // B. 特殊模式判定
+        // 1. 贤者模式 (最高分只有0或1)
+        if (maxScore <= 1) {
+            finalTitle = "贤者模式";
+            finalDesc = "你内心平静如水，对目前列出的各种特殊玩法都没有明显的世俗欲望。你可能正处于贤者时间，或者比起感官刺激，更看重纯粹的精神交流。";
+        } 
+        // 2. 欲望魔神 (总分极高，说明大部分都选了非常符合)
+        else if (totalScore >= (questions.length * 3.5)) { 
+            finalTitle = "欲望集合体";
+            finalDesc = "你的接受度极高，几乎对所有玩法都充满了好奇与渴望。传统的单一标签已经无法定义你，你就像混沌阵营的魔神，探索欲没有边界。";
+        }
+        // 3. 正常判定 (取第一名)
+        else {
+            let top1Key = sortedScores[0].key;
+            
+            // 结果文案库
+            const resultMap = {
+                'sadism': { t: '施虐者 (S)', d: '你享受掌控与征服，看着伴侣在你的引导下展露脆弱，能带给你无与伦比的满足感。' },
+                'humiliation_s': { t: '言语支配者', d: '语言是你的武器，你善于通过言语的力量摧毁防线，重建秩序。' },
+                'conquest': { t: '征服者', d: '你渴望的不是顺从，而是经过抵抗后的臣服，这种征服的过程让你着迷。' },
+                'control': { t: '掌控者', d: '细节决定成败，你需要在关系中拥有绝对的知情权和决定权。' },
+                'force_s': { t: '强力支配', d: '你倾向于展现绝对的力量，这种不可抗拒的压迫感是你欲望的源泉。' },
+                'protect': { t: '守护者', d: '你的支配带有温情，你喜欢把伴侣当作孩子一样宠爱、管教和保护 (Daddy/Mommy Dom)。' },
+                'masochism': { t: '受虐者 (M)', d: '疼痛对你而言不仅仅是痛觉，更是通往极乐世界的钥匙，让你感受到真实的存在。' },
+                'humiliation_m': { t: '受辱倾向', d: '被剥夺尊严的瞬间，反而让你卸下了平日的伪装，获得了灵魂的解脱。' },
+                'submission': { t: '臣服者', d: '你渴望将身心完全托付给一位强大的主导者，在臣服中获得最大的安全感。' },
+                'obedience': { t: '服从者', d: '执行命令是你表达爱意的方式，严格的规则反而让你感到内心平静。' },
+                'force_m': { t: '强迫幻想', d: '你潜意识里渴望不可抗力带来的冲击，这能让你合理化内心深处的欲望。' },
+                'rebel': { t: '叛逆者', d: '常规让你厌倦，越是被禁止的领域，越能点燃你的激情。' },
+                'indulge': { t: '纵欲者', d: '你追求纯粹的感官享乐，在性爱中希望抛弃社会身份，回归本能。' },
+                'exhibit': { t: '露出倾向', d: '被观看的风险让你心跳加速，世界的目光是你最好的催情剂。' },
+                'group': { t: '群体玩家', d: '一对一的关系无法满足你的探索欲，你喜欢更复杂、更热闹的互动。' },
+                'trans': { t: '跨性别幻想', d: '你对性别的边界感到好奇，喜欢尝试打破传统性别角色的扮演。' },
+                'gay': { t: '双向潜质', d: '你的性取向具有流动性，对于同性之间的美感和张力有着敏锐的感知。' },
+                'fetish': { t: '恋物鉴赏家', d: '特定的物品（如丝袜、皮革、足）不仅是道具，更是你欲望的开关。' },
+                'ntr': { t: 'NTR爱好者', d: '看着伴侣被他人占有，那种嫉妒与兴奋交织的复杂情绪让你欲罢不能。' },
+                'pure': { t: '纯爱战神', d: '在你眼中，身体的结合必须是灵魂共鸣的延伸，爱是性的唯一理由。' },
+                'guide': { t: '引导者', d: '你喜欢像导师一样，循循善诱地开发伴侣，享受对方一点点成长的过程。' },
+                'mood': { t: '浪漫主义', d: '你注重氛围感，灯光、气味、音乐的配合能让你的体验提升到新的高度。' }
+            };
+
+            let info = resultMap[top1Key] || { t: '多元探索者', d: '你的性偏好非常丰富且均衡，不被单一的标签所定义。' };
+            finalTitle = info.t;
+            finalDesc = info.d;
+
+            // C. 生成副标签 (第2、3名)
+            // 辅助函数：通过key找中文名
+            const getLabel = (k) => {
+                let idx = dimKeys.indexOf(k);
+                return idx !== -1 ? dimLabels[idx] : k;
+            };
+
+            // 如果第2名分数不错(>=2)，加进去
+            if (sortedScores[1] && sortedScores[1].score >= 2) {
+                subTagsHTML += `<span class="sub-tag">#${getLabel(sortedScores[1].key)}</span>`;
+            }
+            // 如果第3名分数不错(>=2)，加进去
+            if (sortedScores[2] && sortedScores[2].score >= 2) {
+                subTagsHTML += `<span class="sub-tag">#${getLabel(sortedScores[2].key)}</span>`;
+            }
+        }
+
+        // 渲染文字
+        document.getElementById('core-attr').innerText = finalTitle;
+        document.getElementById('result-text').innerText = finalDesc;
+        document.getElementById('sub-tags').innerHTML = subTagsHTML;
+
+        // 渲染图表
         renderChart();
     }
 
-    // --- Chart.js 绘制 ---
+    // --- 4. 绘制雷达图 ---
     function renderChart() {
         const ctx = document.getElementById('radarChart').getContext('2d');
         const dataValues = dimKeys.map(k => scores[k]);
 
-        // 插件：画中心黄点
+        // 自定义插件：画中心黄点
         const centerDotPlugin = {
             id: 'centerDot',
             afterDraw: (chart) => {
@@ -332,23 +410,25 @@
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
-                ctx.fillStyle = '#f5a623';
+                ctx.fillStyle = '#f5a623'; // 黄色中心点
                 ctx.fill();
                 ctx.restore();
             }
         };
 
-        new Chart(ctx, {
+        if(window.myRadar) window.myRadar.destroy();
+
+        window.myRadar = new Chart(ctx, {
             type: 'radar',
             plugins: [centerDotPlugin],
             data: {
                 labels: dimLabels,
                 datasets: [{
                     data: dataValues,
-                    backgroundColor: 'rgba(66, 133, 244, 0.2)',
-                    borderColor: '#4285f4',
+                    backgroundColor: 'rgba(91, 143, 249, 0.25)', // 填充蓝
+                    borderColor: '#5b8ff9', // 边框蓝
                     borderWidth: 2,
-                    pointBackgroundColor: '#4285f4',
+                    pointBackgroundColor: '#5b8ff9',
                     pointBorderColor: '#fff',
                     pointBorderWidth: 1.5,
                     pointRadius: 3
@@ -359,10 +439,13 @@
                 scales: {
                     r: {
                         angleLines: { color: '#e0e0e0' },
-                        grid: { circular: false, color: '#e0e0e0' },
+                        grid: { 
+                            circular: false, // 多边形网格
+                            color: '#e0e0e0' 
+                        },
                         pointLabels: {
                             font: { size: 10, family: 'PingFang SC' },
-                            color: '#555'
+                            color: '#666'
                         },
                         ticks: { display: false, maxTicksLimit: 6 },
                         suggestedMin: 0,
